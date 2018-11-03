@@ -2,8 +2,6 @@ package server
 
 import (
   "fmt"
-  "go_rest_api/pkg"
-  "go_web_server/pkg"
   "ui-mockup-backend"
   "time"
   "net/http"

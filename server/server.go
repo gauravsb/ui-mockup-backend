@@ -1,13 +1,11 @@
 package server
 
 import (
-  "go_web_server/pkg"
   "os"
   "log"
   "net/http"
   "github.com/gorilla/mux"
   "github.com/gorilla/handlers"
-  "go_rest_api/pkg"
   "ui-mockup-backend"
 )
 
