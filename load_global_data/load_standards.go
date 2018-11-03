@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"ui-mockup-backend"
 
 	"github.com/ghodss/yaml"
 )
@@ -30,6 +31,11 @@ type Certification struct {
 
 func main() {
 
+	a := App{}
+	a.Initialize()
+	a.Run()
+
+	/*
 	standardsYamlFile, err := ioutil.ReadFile("/Users/gauravbang/Documents/meng/security-central/standards/nist-800-53-latest.yaml")
 	if err != nil {
 		log.Printf("standardsYamlFile.Get err   #%v ", err)
@@ -39,10 +45,6 @@ func main() {
 		fmt.Printf("err: %v\n", err)
 		return
 	}
-
-	a := App{}
-	a.Initialize()
-	a.Run()
 
 	var standardsResult map[string]interface{}
 	json.Unmarshal([]byte(standardsJson), &standardsResult)
@@ -70,6 +72,7 @@ func main() {
 		fmt.Println(standard)
 		break // TODO: remove after test
 	}
+	*/
 
 	// TODO: Certifications
 	/*
@@ -96,7 +99,7 @@ func main() {
 }
 
 
-func LoadStandards(){
+func LoadStandards() (error, string){
 
 	standardsYamlFile, err := ioutil.ReadFile("/Users/gauravbang/Documents/meng/security-central/standards/nist-800-53-latest.yaml")
 	if err != nil {
@@ -105,13 +108,14 @@ func LoadStandards(){
 	standardsJson, err := yaml.YAMLToJSON(standardsYamlFile)
 	if err != nil {
 		fmt.Printf("err: %v\n", err)
-		return
+		return err, "nist-800-53-latest"
 	}
 
 	var standardsResult map[string]interface{}
 	json.Unmarshal([]byte(standardsJson), &standardsResult)
 
-
+	var controls[] root.Controls
+	i := 0
 	for key, value := range standardsResult {
 		// Each value is an interface{} type, that is type asserted as a string
 
@@ -130,11 +134,20 @@ func LoadStandards(){
 
 		//controlInfo := ControlInfo{ Family:family, Name:name, Description:desc }
 		//standard := Standards{ControlInfo: controlInfo, ControlName:key}
-
+		//controlInfo := root.Controls{ Family:family, Name:name, Description:desc }
+		controlInfo := root.ControlInfo{ Family:family, Name:name, Description:desc }
+		controls[i] = root.Controls{ ControlName: key , ControlInfo: controlInfo }
+		i += 1
+		// todo: Replace with standard name from file name
+		standard := root.Standard{StandardName:"nist-800-53-latest", Controls: controls}
 		// TODO: insert every standard into DB
+		var standardService root.StandardService
+		standardService.CreateStandard(&standard)
 		fmt.Println(standard)
 		break // TODO: remove after test
 	}
+	// todo: Replace with standard name from file name
+	return err, "nist-800-53-latest"
 
 }
 

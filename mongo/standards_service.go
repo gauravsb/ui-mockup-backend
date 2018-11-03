@@ -1,13 +1,9 @@
 package mongo
 
 import (
-	"encoding/json"
-	"fmt"
 	"github.com/ghodss/yaml"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
-	"io/ioutil"
-	"log"
 	"ui-mockup-backend"
 )
 
@@ -34,6 +30,6 @@ func (p *StandardsService) GetStandardsInfo(standardName string) (error, root.St
 	err := p.collection.Find(bson.M{"standardName": standardName}).One(&standardsModel)
 	return err, &root.Standard{
 		StandardName: standardsModel.StandardName,
-		Controls: standardsModel.Controls
+		Controls: standardsModel.Controls,
 	}
 }

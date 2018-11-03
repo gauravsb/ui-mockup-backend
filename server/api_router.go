@@ -1,9 +1,7 @@
 package server
 
 import (
-	"errors"
 	"net/http"
-	"encoding/json"
 	"github.com/gorilla/mux"
 	"ui-mockup-backend"
 )
@@ -21,10 +19,7 @@ func NewStandardRouter(u root.StandardService, router *mux.Router, a *authHelper
 }
 
 func(ur *standardRouter) loadStandardHandler(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	standardName := vars["standardName"]
-
-	err, std := ur.standardService.CreateStandard(standardName)
+	err, std := main.LoadStandards()
 	if err != nil {
 		Error(w, http.StatusNotFound, err.Error())
 		return

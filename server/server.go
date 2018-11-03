@@ -1,12 +1,14 @@
 package server
 
 import (
+  "go_web_server/pkg"
   "os"
   "log"
   "net/http"
   "github.com/gorilla/mux"
   "github.com/gorilla/handlers"
   "go_rest_api/pkg"
+  "ui-mockup-backend"
 )
 
 type Server struct {
@@ -14,13 +16,13 @@ type Server struct {
   config *root.ServerConfig
 }
 
-func NewServer(u root.UserService, config *root.Config) *Server {
+func NewServer(u root.StandardService, config *root.Config) *Server {
   s := Server { 
     router: mux.NewRouter(),
     config: config.Server }
   
   a := authHelper{config.Auth.Secret}
-  NewUserRouter(u, s.getSubrouter("/user"), &a)
+  NewStandardRouter(u, s.getSubrouter("/user"), &a)
   return &s
 }
 
