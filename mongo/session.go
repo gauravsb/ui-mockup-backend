@@ -1,8 +1,8 @@
 package mongo
 
-
 import (
 	"gopkg.in/mgo.v2"
+	"ui-mockup-backend"
 )
 
 type Session struct {

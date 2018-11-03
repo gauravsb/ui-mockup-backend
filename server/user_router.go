@@ -5,7 +5,7 @@ import (
   "net/http"
   "encoding/json"
   "github.com/gorilla/mux"
-  "go_rest_api/pkg"
+  "ui-mockup-backend"
 )
 
 type userRouter struct {

@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"ui-mockup-backend"
 	"ui-mockup-backend/config"
 	"ui-mockup-backend/server"
 	"ui-mockup-backend/mongo"
@@ -22,7 +23,7 @@ func (a *App) Initialize() {
 		log.Fatalln("unable to connect to mongodb")
 	}
 
-	u := mongo.newStandardService(a.session.Copy(), a.config.Mongo)
+	u := mongo.NewStandardsService(a.session.Copy(), a.config.Mongo)
 	a.server = server.NewServer(u, a.config)
 }
 

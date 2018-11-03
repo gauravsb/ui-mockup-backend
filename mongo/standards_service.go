@@ -1,7 +1,6 @@
 package mongo
 
 import (
-	"github.com/ghodss/yaml"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 	"ui-mockup-backend"
@@ -17,19 +16,15 @@ func NewStandardsService(session *mgo.Session, config *root.MongoConfig) *Standa
 	return &StandardsService{collection}
 }
 
-func(p *StandardsService) CreateStandard(std *root.Standard) error {
+func (p *StandardsService) CreateStandard(std *root.Standard) error {
 	standard := newStandardModel(std)
-	if err != nil {
-		return err
-	}
 	return p.collection.Insert(&standard)
 }
 
 func (p *StandardsService) GetStandardsInfo(standardName string) (error, root.Standard) {
 	standardsModel := standardModel{}
 	err := p.collection.Find(bson.M{"standardName": standardName}).One(&standardsModel)
-	return err, &root.Standard{
+	return err, root.Standard{
 		StandardName: standardsModel.StandardName,
-		Controls: standardsModel.Controls,
-	}
+		Controls: standardsModel.Controls}
 }

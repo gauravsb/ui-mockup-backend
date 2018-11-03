@@ -18,6 +18,6 @@ type Standard struct {
 
 type StandardService interface {
 	CreateStandard(u *Standard) error
-	GetStandardInfo(userId string, standardname string) (error, Standard)
+	GetStandardInfo(standardname string) (error, Standard)
 }
 

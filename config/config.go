@@ -1,7 +1,7 @@
 package config
 
 import (
-	"ui-mockup-backend/server"
+	"ui-mockup-backend"
 	"os"
 )
 

@@ -2,13 +2,13 @@ package mongo
 
 import (
 "gopkg.in/mgo.v2"
-"gopkg.in/mgo.v2/bson"
 	"ui-mockup-backend"
 )
 
 type standardModel struct {
 	Controls[] root.Controls
-	StandardName bson.ObjectId `bson:"_id,omitempty"`
+	//StandardName bson.ObjectId `bson:"_id,omitempty"`
+	StandardName string
 }
 
 func standardsIndex() mgo.Index {
@@ -21,7 +21,8 @@ func standardsIndex() mgo.Index {
 	}
 }
 
+// TODO: NO NEED OF THIS FUNCTION PROBABLY
 func newStandardModel(std *root.Standard) (*standardModel) {
-	standard := standardModel{StandardName: std.StandardName, Controls:std.Controls}
-	return &standard
+	standard_model := standardModel{StandardName: std.StandardName, Controls:std.Controls}
+	return &standard_model
 }
