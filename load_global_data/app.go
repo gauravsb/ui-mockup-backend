@@ -22,7 +22,7 @@ func (a *App) Initialize() {
 		log.Fatalln("unable to connect to mongodb")
 	}
 
-	u := mongo.NewUserService(a.session.Copy(), a.config.Mongo)
+	u := mongo.newStandardService(a.session.Copy(), a.config.Mongo)
 	a.server = server.NewServer(u, a.config)
 }
 

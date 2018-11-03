@@ -2,12 +2,13 @@ package server
 
 import (
   "fmt"
+  "go_rest_api/pkg"
   "go_web_server/pkg"
+  "ui-mockup-backend"
   "time"
   "net/http"
   "context" 
   "github.com/dgrijalva/jwt-go"
-  "go_rest_api/pkg"
 )
 
 type authHelper struct {
