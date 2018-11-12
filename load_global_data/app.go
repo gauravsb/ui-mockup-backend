@@ -30,5 +30,6 @@ func (a *App) Initialize() {
 func (a *App) Run() {
 	fmt.Println("Run")
 	defer a.session.Close()
-	a.server.Start()
+	go a.server.Start()
+	LoadStandards()
 }

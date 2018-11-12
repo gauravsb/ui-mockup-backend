@@ -31,9 +31,11 @@ type Certification struct {
 
 func main() {
 
-	a := App{}
-	a.Initialize()
-	a.Run()
+	//a := App{}
+	//a.Initialize()
+	//a.Run()
+	LoadStandards()
+
 
 	/*
 	standardsYamlFile, err := ioutil.ReadFile("/Users/gauravbang/Documents/meng/security-central/standards/nist-800-53-latest.yaml")
@@ -101,6 +103,8 @@ func main() {
 
 func LoadStandards() (error, string){
 
+	print("LOADING STANDARDS")
+
 	standardsYamlFile, err := ioutil.ReadFile("/Users/gauravbang/Documents/meng/security-central/standards/nist-800-53-latest.yaml")
 	if err != nil {
 		log.Printf("standardsYamlFile.Get err   #%v ", err)
@@ -136,6 +140,8 @@ func LoadStandards() (error, string){
 		//standard := Standards{ControlInfo: controlInfo, ControlName:key}
 		//controlInfo := root.Controls{ Family:family, Name:name, Description:desc }
 		controlInfo := root.ControlInfo{ Family:family, Name:name, Description:desc }
+		//print(controlInfo)
+		print(key)
 		controls[i] = root.Controls{ ControlName: key , ControlInfo: controlInfo }
 		i += 1
 		// todo: Replace with standard name from file name
