@@ -21,7 +21,7 @@ func (p *StandardsService) CreateStandard(std *root.Standard) error {
 	return p.collection.Insert(&standard)
 }
 
-func (p *StandardsService) GetStandardsInfo(standardName string) (error, root.Standard) {
+func (p *StandardsService) GetStandardInfo(standardName string) (error, root.Standard) {
 	standardsModel := standardModel{}
 	err := p.collection.Find(bson.M{"standardName": standardName}).One(&standardsModel)
 	return err, root.Standard{
