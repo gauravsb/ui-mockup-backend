@@ -1,14 +1,15 @@
 package mongo
 
 import (
-"gopkg.in/mgo.v2"
+	"gopkg.in/mgo.v2"
 	"ui-mockup-backend"
 )
 
 type standardModel struct {
+	//ID bson.ObjectId `bson:"_id,omitempty"`
 	Controls[] root.Controls
-	//StandardName bson.ObjectId `bson:"_id,omitempty"`
 	StandardName string
+	//StandardName string
 }
 
 func standardsIndex() mgo.Index {

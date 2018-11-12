@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"github.com/gorilla/mux"
 	"ui-mockup-backend"
+	"ui-mockup-backend/mongo"
 )
 
 type standardRouter struct {
@@ -18,12 +19,13 @@ type standardRouter struct {
 
 func NewStandardRouter(u root.StandardService, router *mux.Router, a *authHelper) *mux.Router {
 	standardRouter := standardRouter{u,a}
-	router.HandleFunc("/load_standards", a.validate(standardRouter.loadStandardHandler)).Methods("GET")
+	//router.HandleFunc("/load_standards", a.validate(standardRouter.loadStandardHandler)).Methods("GET")
+	router.HandleFunc("/load_standards", standardRouter.loadStandardHandler).Methods("GET")
 	router.HandleFunc("/get_standard/{standardName}", standardRouter.getStandardHandler).Methods("GET")
 	return router
 }
 
-func(ur *standardRouter) loadStandardHandler(w http.ResponseWriter, r *http.Request) {
+func(ur *standardRouter) loadStandardHandler(w http.ResponseWriter, r *http.Request) {	
 	err, std := LoadStandards()
 	if err != nil {
 		Error(w, http.StatusNotFound, err.Error())
@@ -49,7 +51,9 @@ func(ur *standardRouter) getStandardHandler(w http.ResponseWriter, r *http.Reque
 
 func LoadStandards() (error, string){
 
-	standardsYamlFile, err := ioutil.ReadFile("/Users/gauravbang/Documents/meng/security-central/standards/nist-800-53-latest.yaml")
+	//print("LOADING STANDARDS")
+
+	standardsYamlFile, err := ioutil.ReadFile("/home/mukul/git/standards/nist-800-53-latest.yaml")
 	if err != nil {
 		log.Printf("standardsYamlFile.Get err   #%v ", err)
 	}
@@ -59,10 +63,13 @@ func LoadStandards() (error, string){
 		return err, "nist-800-53-latest"
 	}
 
+	//print(standardsJson)
+
 	var standardsResult map[string]interface{}
 	json.Unmarshal([]byte(standardsJson), &standardsResult)
 
-	var controls[] root.Controls
+	//var controls[] root.Controls
+	controls := []root.Controls{}
 	i := 0
 	for key, value := range standardsResult {
 		// Each value is an interface{} type, that is type asserted as a string
@@ -84,14 +91,17 @@ func LoadStandards() (error, string){
 		//standard := Standards{ControlInfo: controlInfo, ControlName:key}
 		//controlInfo := root.Controls{ Family:family, Name:name, Description:desc }
 		controlInfo := root.ControlInfo{ Family:family, Name:name, Description:desc }
-		controls[i] = root.Controls{ ControlName: key , ControlInfo: controlInfo }
+		//print(controlInfo)
+		//controls[i] = root.Controls{ ControlName: key , ControlInfo: controlInfo }
+		controls = append(controls, root.Controls{ ControlName: key , ControlInfo: controlInfo })
 		i += 1
 		// todo: Replace with standard name from file name
 		standard := root.Standard{StandardName:"nist-800-53-latest", Controls: controls}
+		//fmt.Print(standard)
 		// TODO: insert every standard into DB
-		var standardService root.StandardService
+		standardService := new(mongo.StandardsService)
 		standardService.CreateStandard(&standard)
-		fmt.Println(standard)
+		//fmt.Println(standard)
 		break // TODO: remove after test
 	}
 	// todo: Replace with standard name from file name

@@ -106,7 +106,7 @@ func LoadStandards() (error, string){
 
 	print("Loading Standards....\n")
 
-	standardsYamlFile, err := ioutil.ReadFile("/Users/gauravbang/Documents/meng/security-central/standards/nist-800-53-latest.yaml")
+	standardsYamlFile, err := ioutil.ReadFile("/home/mukul/git/standards/nist-800-53-latest.yaml")
 	if err != nil {
 		log.Printf("standardsYamlFile.Get err   #%v ", err)
 	}
