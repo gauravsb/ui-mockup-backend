@@ -1,6 +1,6 @@
 package main
 
-func temp() {
+func main() {
 	a := App{}
 	a.Initialize()
 	a.Run()
