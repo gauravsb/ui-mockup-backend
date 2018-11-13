@@ -1,6 +1,7 @@
 package mongo
 
 import (
+	"fmt"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 	"ui-mockup-backend"
@@ -18,6 +19,9 @@ func NewStandardsService(session *mgo.Session, config *root.MongoConfig) *Standa
 
 func (p *StandardsService) CreateStandard(std *root.Standard) error {
 	standard := newStandardModel(std)
+	fmt.Println(standard);
+	fmt.Println(&standard);
+	fmt.Println(p.collection);
 	return p.collection.Insert(&standard)
 }
 

@@ -4,12 +4,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/ghodss/yaml"
+	"github.com/gorilla/mux"
 	"io/ioutil"
 	"log"
 	"net/http"
-	"github.com/gorilla/mux"
 	"ui-mockup-backend"
-	"ui-mockup-backend/mongo"
 )
 
 type standardRouter struct {
@@ -25,21 +24,26 @@ func NewStandardRouter(u root.StandardService, router *mux.Router, a *authHelper
 	return router
 }
 
-func(ur *standardRouter) loadStandardHandler(w http.ResponseWriter, r *http.Request) {	
-	err, std := LoadStandards()
+func(sr *standardRouter) loadStandardHandler(w http.ResponseWriter, r *http.Request) {
+	err, stds := LoadStandards()
+
+	for stdI := range stds{
+		sr.standardService.CreateStandard(&stds[stdI])
+	}
+
 	if err != nil {
 		Error(w, http.StatusNotFound, err.Error())
 		return
 	}
 
-	Json(w, http.StatusOK, std)
+	Json(w, http.StatusOK, stds)
 }
 
-func(ur *standardRouter) getStandardHandler(w http.ResponseWriter, r *http.Request) {
+func(sr *standardRouter) getStandardHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	standardName := vars["standardName"]
 
-	err, std := ur.standardService.GetStandardInfo(standardName)
+	err, std := sr.standardService.GetStandardInfo(standardName)
 	if err != nil {
 		Error(w, http.StatusNotFound, err.Error())
 		return
@@ -49,7 +53,7 @@ func(ur *standardRouter) getStandardHandler(w http.ResponseWriter, r *http.Reque
 }
 
 
-func LoadStandards() (error, string){
+func LoadStandards() (error, []root.Standard){
 
 	//print("LOADING STANDARDS")
 
@@ -60,7 +64,7 @@ func LoadStandards() (error, string){
 	standardsJson, err := yaml.YAMLToJSON(standardsYamlFile)
 	if err != nil {
 		fmt.Printf("err: %v\n", err)
-		return err, "nist-800-53-latest"
+		//return err, "nist-800-53-latest"
 	}
 
 	//print(standardsJson)
@@ -70,6 +74,7 @@ func LoadStandards() (error, string){
 
 	//var controls[] root.Controls
 	controls := []root.Controls{}
+	stds := []root.Standard{}
 	i := 0
 	for key, value := range standardsResult {
 		// Each value is an interface{} type, that is type asserted as a string
@@ -92,20 +97,20 @@ func LoadStandards() (error, string){
 		//controlInfo := root.Controls{ Family:family, Name:name, Description:desc }
 		controlInfo := root.ControlInfo{ Family:family, Name:name, Description:desc }
 		//print(controlInfo)
-		//controls[i] = root.Controls{ ControlName: key , ControlInfo: controlInfo }
+		//controls[i] = rmongooot.Controls{ ControlName: key , ControlInfo: controlInfo }
 		controls = append(controls, root.Controls{ ControlName: key , ControlInfo: controlInfo })
 		i += 1
 		// todo: Replace with standard name from file name
 		standard := root.Standard{StandardName:"nist-800-53-latest", Controls: controls}
 		//fmt.Print(standard)
 		// TODO: insert every standard into DB
-		standardService := new(mongo.StandardsService)
-		standardService.CreateStandard(&standard)
+		//standardService := new(mongo.StandardsService)
+		stds = append(stds, standard)
 		//fmt.Println(standard)
-		break // TODO: remove after test
+		//break // TODO: remove after test
 	}
 	// todo: Replace with standard name from file name
-	return err, "nist-800-53-latest"
+	return err, stds
 
 }
 
