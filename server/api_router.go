@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"reflect"
 	"ui-mockup-backend"
 )
 
@@ -73,42 +74,45 @@ func LoadStandards() (error, []root.Standard){
 	json.Unmarshal([]byte(standardsJson), &standardsResult)
 
 	//var controls[] root.Controls
-	controls := []root.Controls{}
 	stds := []root.Standard{}
 	i := 0
 	for key, value := range standardsResult {
 		// Each value is an interface{} type, that is type asserted as a string
-
+		controls := []root.Controls{}
 		var desc, family, name string
-		for k, v := range value.(map[string]interface{}) {
-			if k == "family" {
-				family = v.(string)
+		vt := reflect.TypeOf(value).Kind()
+		if (vt != reflect.String){
+			for k, v := range value.(map[string]interface{}) {
+				if k == "family" {
+					family = v.(string)
+				}
+				if k == "name" {
+					name = v.(string)
+				}
+				if k == "description" {
+					desc = v.(string)
+				}
 			}
-			if k == "name" {
-				name = v.(string)
-			}
-			if k == "description" {
-				desc = v.(string)
-			}
-		}
 
-		//controlInfo := ControlInfo{ Family:family, Name:name, Description:desc }
-		//standard := Standards{ControlInfo: controlInfo, ControlName:key}
-		//controlInfo := root.Controls{ Family:family, Name:name, Description:desc }
-		controlInfo := root.ControlInfo{ Family:family, Name:name, Description:desc }
-		//print(controlInfo)
-		//controls[i] = rmongooot.Controls{ ControlName: key , ControlInfo: controlInfo }
-		controls = append(controls, root.Controls{ ControlName: key , ControlInfo: controlInfo })
-		i += 1
-		// todo: Replace with standard name from file name
-		standard := root.Standard{StandardName:"nist-800-53-latest", Controls: controls}
-		//fmt.Print(standard)
-		// TODO: insert every standard into DB
-		//standardService := new(mongo.StandardsService)
-		stds = append(stds, standard)
-		//fmt.Println(standard)
-		//break // TODO: remove after test
-	}
+			//controlInfo := ControlInfo{ Family:family, Name:name, Description:desc }
+			//standard := Standards{ControlInfo: controlInfo, ControlName:key}
+			//controlInfo := root.Controls{ Family:family, Name:name, Description:desc }
+			controlInfo := root.ControlInfo{ Family:family, Name:name, Description:desc }
+			//print(controlInfo)
+			//controls[i] = rmongooot.Controls{ ControlName: key , ControlInfo: controlInfo }
+			controls = append(controls, root.Controls{ ControlName: key , ControlInfo: controlInfo })
+			i += 1
+			// todo: Replace with standard name from file name
+			standard := root.Standard{StandardName:"nist-800-53-latest", Controls: controls}
+			//fmt.Print(standard)
+			// TODO: insert every standard into DB
+			//standardService := new(mongo.StandardsService)
+			stds = append(stds, standard)
+			//fmt.Println(standard)
+			//break // TODO: remove after test
+
+		}
+		}
 	// todo: Replace with standard name from file name
 	return err, stds
 
