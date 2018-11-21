@@ -23,6 +23,7 @@ func NewStandardRouter(u root.StandardService, router *mux.Router, a *authHelper
 	router.HandleFunc("/load_standards", standardRouter.loadStandardHandler).Methods("GET")
 	router.HandleFunc("/get_standard/{standardName}", standardRouter.getStandardHandler).Methods("GET")
 	router.HandleFunc("/load_certifications", standardRouter.loadCertificationHandler).Methods("GET")
+	router.HandleFunc("/get_certification/{certificationName}", standardRouter.getCertificationHandler).Methods("GET")
 	return router
 }
 
@@ -101,6 +102,20 @@ func(sr *standardRouter) getStandardHandler(w http.ResponseWriter, r *http.Reque
 
 	Json(w, http.StatusOK, std)
 }
+
+func(sr *standardRouter) getCertificationHandler(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	certificationName := vars["certificationName"]
+
+	err, cert := sr.standardService.GetCertificationInfo(certificationName)
+	if err != nil {
+		Error(w, http.StatusNotFound, err.Error())
+		return
+	}
+
+	Json(w, http.StatusOK, cert)
+}
+
 
 
 func LoadStandards() (error, []root.Standard){

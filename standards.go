@@ -25,8 +25,8 @@ type Certification struct {
 
 type StandardService interface {
 	CreateStandard(u *Standard) error
-	GetStandardInfo(standardname string) (error, Standard)
+	GetStandardInfo(standardname string) (error, []Standard)
 	CreateCertification(u *Certification) error
-	//GetCertificationInfo(certificationName string) (error, Certification)
+	GetCertificationInfo(certificationName string) (error, Certification)
 }
 

@@ -30,10 +30,14 @@ func (p *StandardsService) CreateCertification(u *root.Certification) error {
 	return p.certCollection.Insert(&u)
 }
 
-func (p *StandardsService) GetStandardInfo(standardName string) (error, root.Standard) {
-	standardsModel := standardModel{}
-	err := p.stdCollection.Find(bson.M{"standardName": standardName}).One(&standardsModel)
-	return err, root.Standard{
-		StandardName: standardsModel.StandardName,
-		Controls: standardsModel.Controls}
+func (p *StandardsService) GetStandardInfo(standardName string) (error, []root.Standard) {
+	standardsModel := []root.Standard{}
+	err := p.stdCollection.Find(bson.M{"standardname": standardName}).Iter().All(&standardsModel)
+	return err, standardsModel
+}
+
+func (p *StandardsService) GetCertificationInfo(certificationName string) (error, root.Certification) {
+	certModel := root.Certification{}
+	err := p.certCollection.Find(bson.M{"certificationname": certificationName}).One(&certModel)
+	return err, certModel
 }
