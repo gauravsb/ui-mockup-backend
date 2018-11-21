@@ -22,6 +22,16 @@ func standardsIndex() mgo.Index {
 	}
 }
 
+func certificationIndex() mgo.Index {
+	return mgo.Index{
+		Key:        []string{"certificationName"},
+		Unique:     true,
+		DropDups:   true,
+		Background: true,
+		Sparse:     true,
+	}
+}
+
 // TODO: NO NEED OF THIS FUNCTION PROBABLY
 func newStandardModel(std *root.Standard) (*standardModel) {
 	standard_model := standardModel{StandardName: std.StandardName, Controls:std.Controls}
