@@ -24,7 +24,33 @@ func NewStandardRouter(u root.StandardService, router *mux.Router, a *authHelper
 	router.HandleFunc("/get_standard/{standardName}", standardRouter.getStandardHandler).Methods("GET")
 	router.HandleFunc("/load_certifications", standardRouter.loadCertificationHandler).Methods("GET")
 	router.HandleFunc("/get_certification/{certificationName}", standardRouter.getCertificationHandler).Methods("GET")
+	router.HandleFunc("/addCertificationToUser", standardRouter.addCertificationToUserHandler).Methods("PUT")
+	router.HandleFunc("/getCertificationForUser/{userName}", standardRouter.getCertificationForUserHandler).Methods("GET")
 	return router
+}
+
+
+func(sr *standardRouter) getCertificationForUserHandler(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	userName := vars["userName"]
+	err, std := sr.standardService.GetCertificationForUser(userName)
+	if err != nil {
+		Error(w, http.StatusNotFound, err.Error())
+		return
+	}
+
+	Json(w, http.StatusOK, std)
+}
+
+func(sr *standardRouter) addCertificationToUserHandler(w http.ResponseWriter, r *http.Request) {
+
+	model := root.UserCertModel{}
+	if r.Body != nil {
+		decoder := json.NewDecoder(r.Body)
+		decoder.Decode(&model)
+	}
+	sr.standardService.AddCertificationToUser(model)
+	Json(w, http.StatusOK, model)
 }
 
 func(sr *standardRouter) loadCertificationHandler(w http.ResponseWriter, r *http.Request) {
@@ -42,7 +68,7 @@ func(sr *standardRouter) loadCertificationHandler(w http.ResponseWriter, r *http
 
 func LoadCertification() (error, root.Certification){
 
-	certYamlFile, err := ioutil.ReadFile("/home/mukul/git/certifications/fedramp-low.yaml")
+	certYamlFile, err := ioutil.ReadFile("/home/mukul/git/certifications/fedramp-high.yaml")
 	if err != nil {
 		log.Printf("certYamlFile.Get err   #%v ", err)
 	}

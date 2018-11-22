@@ -22,11 +22,17 @@ type Certification struct {
 	ControlName[] string `json:"controls"`
 }
 
+type UserCertModel struct {
+	UserName string
+	Controls []string
+}
 
 type StandardService interface {
 	CreateStandard(u *Standard) error
 	GetStandardInfo(standardname string) (error, []Standard)
 	CreateCertification(u *Certification) error
-	GetCertificationInfo(certificationName string) (error, Certification)
+	GetCertificationInfo(certificationName string) (error, []Certification)
+	AddCertificationToUser(model UserCertModel) error
+	GetCertificationForUser(userName string) (error, []string)
 }
 
