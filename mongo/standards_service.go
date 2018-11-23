@@ -31,7 +31,7 @@ func (p *StandardsService) CreateCertification(u *root.Certification) error {
 	return p.certCollection.Insert(&u)
 }
 
-func (p *StandardsService) GetCertificationForUser(userName string) (error, []string) {
+func (p *StandardsService) GetCertificationForUser(userName string) (error, []root.UserControlModel) {
 	certModel := root.UserCertModel{}
 	err := p.userCollection.Find(bson.M{"username": userName}).One(&certModel)
 	return err, certModel.Controls

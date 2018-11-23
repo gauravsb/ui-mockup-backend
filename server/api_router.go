@@ -49,6 +49,7 @@ func(sr *standardRouter) addCertificationToUserHandler(w http.ResponseWriter, r 
 		decoder := json.NewDecoder(r.Body)
 		decoder.Decode(&model)
 	}
+	fmt.Println(model)
 	sr.standardService.AddCertificationToUser(model)
 	Json(w, http.StatusOK, model)
 }
