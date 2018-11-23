@@ -1,7 +1,6 @@
 package mongo
 
 import (
-	"fmt"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 	"ui-mockup-backend"
@@ -29,16 +28,12 @@ func (p *StandardsService) CreateStandard(std *root.Standard) error {
 }
 
 func (p *StandardsService) CreateCertification(u *root.Certification) error {
-	fmt.Println(u);
 	return p.certCollection.Insert(&u)
 }
 
 func (p *StandardsService) GetCertificationForUser(userName string) (error, []string) {
 	certModel := root.UserCertModel{}
-	fmt.Println("username-->", userName)
 	err := p.userCollection.Find(bson.M{"username": userName}).One(&certModel)
-	fmt.Println("certModel-->", certModel)
-	fmt.Println("certModel.Controls-->", certModel.Controls)
 	return err, certModel.Controls
 }
 

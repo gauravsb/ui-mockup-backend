@@ -55,8 +55,8 @@ func(sr *standardRouter) addCertificationToUserHandler(w http.ResponseWriter, r 
 
 func(sr *standardRouter) loadCertificationHandler(w http.ResponseWriter, r *http.Request) {
 
-	//path := "/home/mukul/git/certifications/"
-	path := "/home/ec2-user/git/certifications/"
+	path := "/home/mukul/git/certifications/"
+	//path := "/home/ec2-user/git/certifications/"
 	filenames := []string{"fedramp-high.yaml", "fedramp-moderate.yaml", "fedramp-low.yaml", "fisma-high-impact.yaml", "fisma-mod-impact.yaml", "fisma-low-impact.yaml", "icd-503-high.yaml", "icd-503-moderate.yaml", "icd-503-low.yaml", "dhs-4300a.yaml"}
 	certs  := []root.Certification{}
 
@@ -163,19 +163,15 @@ func LoadStandards() (error, []root.Standard){
 		standardsJson, err := yaml.YAMLToJSON(standardsYamlFile)
 		if err != nil {
 			fmt.Printf("err: %v\n", err)
-			//return err, "nist-800-53-latest"
 		}
-
-		//print(standardsJson)
-
 		var standardsResult map[string]interface{}
 		json.Unmarshal([]byte(standardsJson), &standardsResult)
-
-		//var controls[] root.Controls
 		i := 0
+		stdName := standardsResult["name"].(string)
 		for key, value := range standardsResult {
 			// Each value is an interface{} type, that is type asserted as a string
 			controls := []root.Controls{}
+
 			var desc, family, name string
 			vt := reflect.TypeOf(value).Kind()
 			if (vt != reflect.String){
@@ -191,27 +187,13 @@ func LoadStandards() (error, []root.Standard){
 					}
 				}
 
-				//controlInfo := ControlInfo{ Family:family, Name:name, Description:desc }
-				//standard := Standards{ControlInfo: controlInfo, ControlName:key}
-				//controlInfo := root.Controls{ Family:family, Name:name, Description:desc }
 				controlInfo := root.ControlInfo{ Family:family, Name:name, Description:desc }
-				//print(controlInfo)
-				//controls[i] = rmongooot.Controls{ ControlName: key , ControlInfo: controlInfo }
 				controls = append(controls, root.Controls{ ControlName: key , ControlInfo: controlInfo })
 				i += 1
-				// todo: Replace with standard name from file name
-				standard := root.Standard{StandardName:file, Controls: controls}
-				//fmt.Print(standard)
-				// TODO: insert every standard into DB
-				//standardService := new(mongo.StandardsService)
+				standard := root.Standard{StandardName:stdName, Controls: controls}
 				stds = append(stds, standard)
-				//fmt.Println(standard)
-				//break // TODO: remove after test
-
 			}
 		}
-		// todo: Replace with standard name from file name
-
 	}
 	return err, stds
 
