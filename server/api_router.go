@@ -56,7 +56,7 @@ func(sr *standardRouter) addCertificationToUserHandler(w http.ResponseWriter, r 
 func(sr *standardRouter) loadCertificationHandler(w http.ResponseWriter, r *http.Request) {
 
 	//path := "/home/mukul/git/certifications/"
-	path := "home/ec2-user/git/certifications/"
+	path := "/home/ec2-user/git/certifications/"
 	filenames := []string{"fedramp-high.yaml", "fedramp-moderate.yaml", "fedramp-low.yaml", "fisma-high-impact.yaml", "fisma-mod-impact.yaml", "fisma-low-impact.yaml", "icd-503-high.yaml", "icd-503-moderate.yaml", "icd-503-low.yaml", "dhs-4300a.yaml"}
 	certs  := []root.Certification{}
 
@@ -150,7 +150,7 @@ func(sr *standardRouter) getCertificationHandler(w http.ResponseWriter, r *http.
 func LoadStandards() (error, []root.Standard){
 
 	//path := "/home/mukul/git/standards/"
-	path := "home/ec2-user/git/standards/"
+	path := "/home/ec2-user/git/standards/"
 	filenames := []string{"nist-800-53-latest.yaml", "tsc-2017.yaml"}
 	stds := []root.Standard{}
 	var err error
