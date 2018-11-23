@@ -54,21 +54,24 @@ func(sr *standardRouter) addCertificationToUserHandler(w http.ResponseWriter, r 
 }
 
 func(sr *standardRouter) loadCertificationHandler(w http.ResponseWriter, r *http.Request) {
-	err, cert := LoadCertification()
 
-	sr.standardService.CreateCertification(&cert)
+	//path := "/home/mukul/git/certifications/"
+	path := "home/ec2-user/git/certifications"
+	filenames := []string{"fedramp-high.yaml", "fedramp-moderate.yaml", "fedramp-low.yaml", "fisma-high-impact.yaml", "fisma-mod-impact.yaml", "fisma-low-impact.yaml", "icd-503-high.yaml", "icd-503-moderate.yaml", "icd-503-low.yaml", "dhs-4300a.yaml"}
+	certs  := []root.Certification{}
 
-	if err != nil {
-		Error(w, http.StatusNotFound, err.Error())
-		return
+	for _, file := range filenames {
+		_, cert := LoadCertification(path + file)
+		sr.standardService.CreateCertification(&cert)
+		certs = append(certs, cert)
 	}
 
-	Json(w, http.StatusOK, cert)
+	Json(w, http.StatusOK, certs)
 }
 
-func LoadCertification() (error, root.Certification){
+func LoadCertification(file string) (error, root.Certification){
 
-	certYamlFile, err := ioutil.ReadFile("/home/mukul/git/certifications/fedramp-high.yaml")
+	certYamlFile, err := ioutil.ReadFile(file)
 	if err != nil {
 		log.Printf("certYamlFile.Get err   #%v ", err)
 	}
@@ -146,64 +149,70 @@ func(sr *standardRouter) getCertificationHandler(w http.ResponseWriter, r *http.
 
 func LoadStandards() (error, []root.Standard){
 
-	//print("LOADING STANDARDS")
-
-	standardsYamlFile, err := ioutil.ReadFile("/home/mukul/git/standards/nist-800-53-latest.yaml")
-	if err != nil {
-		log.Printf("standardsYamlFile.Get err   #%v ", err)
-	}
-	standardsJson, err := yaml.YAMLToJSON(standardsYamlFile)
-	if err != nil {
-		fmt.Printf("err: %v\n", err)
-		//return err, "nist-800-53-latest"
-	}
-
-	//print(standardsJson)
-
-	var standardsResult map[string]interface{}
-	json.Unmarshal([]byte(standardsJson), &standardsResult)
-
-	//var controls[] root.Controls
+	//path := "/home/mukul/git/standards/"
+	path := "home/ec2-user/git/standards"
+	filenames := []string{"nist-800-53-latest.yaml", "tsc-2017.yaml"}
 	stds := []root.Standard{}
-	i := 0
-	for key, value := range standardsResult {
-		// Each value is an interface{} type, that is type asserted as a string
-		controls := []root.Controls{}
-		var desc, family, name string
-		vt := reflect.TypeOf(value).Kind()
-		if (vt != reflect.String){
-			for k, v := range value.(map[string]interface{}) {
-				if k == "family" {
-					family = v.(string)
+	var err error
+	for _, file := range filenames{
+		fullpa := path + file
+		standardsYamlFile, err := ioutil.ReadFile(fullpa)
+		if err != nil {
+			log.Printf("standardsYamlFile.Get err   #%v ", err)
+		}
+		standardsJson, err := yaml.YAMLToJSON(standardsYamlFile)
+		if err != nil {
+			fmt.Printf("err: %v\n", err)
+			//return err, "nist-800-53-latest"
+		}
+
+		//print(standardsJson)
+
+		var standardsResult map[string]interface{}
+		json.Unmarshal([]byte(standardsJson), &standardsResult)
+
+		//var controls[] root.Controls
+		i := 0
+		for key, value := range standardsResult {
+			// Each value is an interface{} type, that is type asserted as a string
+			controls := []root.Controls{}
+			var desc, family, name string
+			vt := reflect.TypeOf(value).Kind()
+			if (vt != reflect.String){
+				for k, v := range value.(map[string]interface{}) {
+					if k == "family" {
+						family = v.(string)
+					}
+					if k == "name" {
+						name = v.(string)
+					}
+					if k == "description" {
+						desc = v.(string)
+					}
 				}
-				if k == "name" {
-					name = v.(string)
-				}
-				if k == "description" {
-					desc = v.(string)
-				}
+
+				//controlInfo := ControlInfo{ Family:family, Name:name, Description:desc }
+				//standard := Standards{ControlInfo: controlInfo, ControlName:key}
+				//controlInfo := root.Controls{ Family:family, Name:name, Description:desc }
+				controlInfo := root.ControlInfo{ Family:family, Name:name, Description:desc }
+				//print(controlInfo)
+				//controls[i] = rmongooot.Controls{ ControlName: key , ControlInfo: controlInfo }
+				controls = append(controls, root.Controls{ ControlName: key , ControlInfo: controlInfo })
+				i += 1
+				// todo: Replace with standard name from file name
+				standard := root.Standard{StandardName:file, Controls: controls}
+				//fmt.Print(standard)
+				// TODO: insert every standard into DB
+				//standardService := new(mongo.StandardsService)
+				stds = append(stds, standard)
+				//fmt.Println(standard)
+				//break // TODO: remove after test
+
 			}
-
-			//controlInfo := ControlInfo{ Family:family, Name:name, Description:desc }
-			//standard := Standards{ControlInfo: controlInfo, ControlName:key}
-			//controlInfo := root.Controls{ Family:family, Name:name, Description:desc }
-			controlInfo := root.ControlInfo{ Family:family, Name:name, Description:desc }
-			//print(controlInfo)
-			//controls[i] = rmongooot.Controls{ ControlName: key , ControlInfo: controlInfo }
-			controls = append(controls, root.Controls{ ControlName: key , ControlInfo: controlInfo })
-			i += 1
-			// todo: Replace with standard name from file name
-			standard := root.Standard{StandardName:"nist-800-53-latest", Controls: controls}
-			//fmt.Print(standard)
-			// TODO: insert every standard into DB
-			//standardService := new(mongo.StandardsService)
-			stds = append(stds, standard)
-			//fmt.Println(standard)
-			//break // TODO: remove after test
-
 		}
-		}
-	// todo: Replace with standard name from file name
+		// todo: Replace with standard name from file name
+
+	}
 	return err, stds
 
 }
