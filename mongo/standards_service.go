@@ -49,7 +49,9 @@ func (p *StandardsService) GetStandardInfo(standardName string) (error, []root.S
 }
 
 func (p *StandardsService) AddCertificationToUser(model root.UserCertModel) error{
-	return p.userCollection.Insert(&model)
+	//upsertdata := bson.M{ "$set": model}
+	_ , err2 := p.userCollection.UpsertId( model.UserName, model )
+	return err2
 }
 
 func (p *StandardsService) GetCertificationInfo(certificationName string) (error, []root.Certification) {
